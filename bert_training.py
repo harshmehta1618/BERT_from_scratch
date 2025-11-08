@@ -230,8 +230,8 @@ def plot_training_curves(history, save_path='training_curves.png'):
 
 
 def train_bert(
-    num_epochs=15,
-    batch_size=16,
+    num_epochs=30,
+    batch_size=12,
     learning_rate=3e-5,
     max_len=128,
     warmup_steps=1000,
@@ -261,9 +261,9 @@ def train_bert(
         'vocab_size': vocab_size,
         'n_segments': 2,
         'max_len': max_len,
-        'embed_dim': 256,
-        'n_layers': 4,
-        'attn_heads': 4,
+        'embed_dim': 384,
+        'n_layers': 6,
+        'attn_heads': 8,
         'dropout': 0.1
     }
     
@@ -384,8 +384,8 @@ def train_bert(
 if __name__ == "__main__":
     # Train the model
     model, history = train_bert(
-        num_epochs=15,
-        batch_size=16,
+        num_epochs=30,
+        batch_size=12,
         learning_rate=3e-5,
         max_len=128,
         warmup_steps=1000
