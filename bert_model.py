@@ -162,7 +162,7 @@ if __name__ == "__main__":
     N_LAYERS = 6  # Reduced from 12
     ATTN_HEADS = 8  # Reduced from 12
     DROPOUT = 0.1
-    BATCH_SIZE = 8
+    BATCH_SIZE = 12
     
     # Special token IDs (define these based on your tokenizer)
     CLS_TOKEN_ID = 101
