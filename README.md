@@ -16,13 +16,13 @@ This project implements a simplified version of BERT following the original pape
 The implementation uses a scaled-down version of BERT to accommodate training constraints:
 
 - **Vocabulary Size**: 30,522 (BERT base uncased tokenizer)
-- **Embedding Dimension**: 256
-- **Number of Layers**: 4 transformer encoder layers
-- **Attention Heads**: 4 per layer
+- **Embedding Dimension**: 384
+- **Number of Layers**: 6 transformer encoder layers
+- **Attention Heads**: 8 per layer
 - **Feed-Forward Dimension**: 1024 (4x embedding dimension)
 - **Maximum Sequence Length**: 128 tokens
 - **Dropout**: 0.1
-- **Total Parameters**: ~18M parameters
+- **Total Parameters**: ~34M parameters
 
 ### Key Components
 
@@ -75,8 +75,8 @@ Input format: `[CLS] Sentence A [SEP] Sentence B [SEP]`
 ### Training Configuration
 - **Optimizer**: AdamW (learning rate: 3e-5, weight decay: 0.01)
 - **Scheduler**: Linear warmup + decay (1000 warmup steps)
-- **Batch Size**: 16
-- **Epochs**: 15
+- **Batch Size**: 12
+- **Epochs**: 30
 - **Gradient Clipping**: Max norm 1.0
 - **Loss**: Combined MLM loss + NSP loss
 
@@ -91,7 +91,7 @@ python bert_training.py
 This will:
 - Load and preprocess WikiText-2 dataset
 - Initialize BERT model
-- Train for 15 epochs with validation after each epoch
+- Train for 30 epochs with validation after each epoch
 - Save checkpoints in `checkpoints/` directory
 - Generate training curves plot
 - Display example predictions
@@ -148,28 +148,26 @@ Interactive menu options:
 ## Results
 
 ### Training Performance
-After 15 epochs of training on WikiText-2, the model achieves:
+After 30 epochs of training on WikiText-2, the model achieves:
 
-- **Final Training Loss**: 5.9607
-  - MLM Loss: 5.3044
-  - NSP Loss: 0.6563
-- **Final Validation Loss**: 5.1862
-  - MLM Loss: 4.5326
-  - NSP Loss: 0.6535
-- **MLM Accuracy**: 38.90% (top-1 prediction on masked tokens)
-- **NSP Accuracy**: 61.07% (binary classification)
+- **Final Training Loss**: 4.8063
+  - MLM Loss: 4.3455
+  - NSP Loss: 0.4608
+- **Final Validation Loss**: 4.3613
+  - MLM Loss: 3.8353
+  - NSP Loss: 0.5260
+- **MLM Accuracy**: 44.43% (top-1 prediction on masked tokens)
+- **NSP Accuracy**: 74.30% (binary classification)
 
-<img width="4470" height="2966" alt="training_curves" src="https://github.com/user-attachments/assets/736d98bd-9dac-42bd-a1b2-52f0a5d9e0c0" />
+<img width="930" height="616" alt="Screenshot 2025-11-09 000420" src="https://github.com/user-attachments/assets/dcf92193-cd6b-45f4-a346-609cf0f3f8d3" />
 
 
-### Analysis
-
-The model demonstrates basic learning but is limited by:
-1. **Small dataset size**: WikiText-2 (~2M tokens) is insufficient for strong language understanding
-2. **Reduced architecture**: 4 layers with 256-dim embeddings vs BERT-base's 12 layers with 768-dim
-3. **Limited training**: 15 epochs vs BERT's extensive pre-training on 3.3B tokens
-4. **NSP performance**: 61% accuracy shows the model learns some sentence relationships (baseline is 50%)
-5. **MLM predictions**: Model often predicts common tokens (punctuation, articles) rather than contextually appropriate words
+The model demonstrates meaningful learning of language patterns:
+1. **MLM Performance**: 44.43% accuracy represents significant learning compared to random baseline (0.003% for 30K vocabulary), showing the model captures contextual relationships
+2. **NSP Performance**: 74.30% accuracy is substantially above random baseline (50%), indicating the model successfully learns sentence-level coherence
+3. **Loss Reduction**: Training loss improved from initial ~8-9 to 4.81, and validation loss to 4.36, demonstrating effective learning without severe overfitting
+4. **Training Constraints**: Performance is limited by small dataset (WikiText-2: ~2M tokens vs BERT's 3.3B tokens) and reduced architecture (6 layers, 384-dim vs BERT-base's 12 layers, 768-dim)
+5. **Prediction Quality**: While not matching full BERT performance, the model shows improvement in contextual understanding compared to smaller configurations
 
 ### Example Predictions
 
@@ -177,27 +175,27 @@ The model demonstrates basic learning but is limited by:
 ```
 Input: "The capital of France is [MASK]."
 Top 5 predictions:
-  1. >           (score: 5.03)
-  2. .           (score: 4.19)
-  3. "           (score: 3.44)
-  4. ##s         (score: 3.36)
-  5. the         (score: 3.07)
+  1. unknown     (score: 6.30)
+  2. named       (score: 5.32)
+  3. built       (score: 5.02)
+  4. located     (score: 5.01)
+  5. known       (score: 5.00)
 
 Input: "Albert Einstein was a famous [MASK]."
 Top 5 predictions:
-  1. .           (score: 5.40)
-  2. season      (score: 4.42)
-  3. series      (score: 3.97)
-  4. game        (score: 3.95)
-  5. century     (score: 3.95)
+  1. role        (score: 5.11)
+  2. man         (score: 5.08)
+  3. film        (score: 4.97)
+  4. .           (score: 4.62)
+  5. woman       (score: 4.61)
 
 Input: "I love to [MASK] books in my free time."
 Top 5 predictions:
-  1. be          (score: 7.24)
-  2. the         (score: 6.51)
-  3. a           (score: 5.50)
-  4. have        (score: 5.46)
-  5. make        (score: 5.09)
+  1. be          (score: 7.63)
+  2. the         (score: 7.50)
+  3. a           (score: 6.41)
+  4. my          (score: 6.15)
+  5. his         (score: 5.96)
 ```
 
 **Note**: The model's predictions are not semantically accurate due to training constraints. However, the implementation correctly follows BERT's architecture and training procedure. With more data, longer training, and a larger model, performance would improve significantly.
@@ -231,7 +229,7 @@ Each training example contains:
 
 - **Small Dataset**: WikiText-2 (~2M tokens) vs original BERT (~3.3B tokens)
 - **Reduced Architecture**: Fewer layers/dimensions than BERT-base
-- **Short Training**: 15 epochs vs original BERT's extensive pre-training
+- **Short Training**: 30 epochs vs original BERT's extensive pre-training
 - **Limited Vocabulary**: Uses only uncased vocabulary
 - **No Fine-tuning**: Model is only pre-trained, not fine-tuned on downstream tasks
 
@@ -245,7 +243,6 @@ Each training example contains:
 
 - Implement whole word masking
 - Add SentencePiece tokenization option
-- Support longer sequences (256/512 tokens)
 - Implement dynamic masking (different masks per epoch)
 - Fine-tune on downstream tasks (sentiment analysis, QA)
 - Multi-GPU support with DistributedDataParallel
