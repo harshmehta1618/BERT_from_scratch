@@ -159,6 +159,9 @@ After 15 epochs of training on WikiText-2, the model achieves:
 - **MLM Accuracy**: 38.90% (top-1 prediction on masked tokens)
 - **NSP Accuracy**: 61.07% (binary classification)
 
+<img width="4470" height="2966" alt="training_curves" src="https://github.com/user-attachments/assets/736d98bd-9dac-42bd-a1b2-52f0a5d9e0c0" />
+
+
 ### Analysis
 
 The model demonstrates basic learning but is limited by:
