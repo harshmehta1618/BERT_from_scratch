@@ -22,7 +22,7 @@ The implementation uses a scaled-down version of BERT to accommodate training co
 - **Feed-Forward Dimension**: 1024 (4x embedding dimension)
 - **Maximum Sequence Length**: 128 tokens
 - **Dropout**: 0.1
-- **Total Parameters**: ~12M parameters
+- **Total Parameters**: ~18M parameters
 
 ### Key Components
 
